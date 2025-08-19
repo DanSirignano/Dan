@@ -2,7 +2,7 @@
 Name:       Dan Sirignano
 CS 230:     Summer Section 1
 Data:       Shipwreck Data
-URL:
+URL:        tbd
 
 Description:
 
@@ -16,13 +16,14 @@ the wreck, it shows the max casualties of any wreck, and lastly shows the user t
 shipwrecks based on the cause of the wreck.
 
 References:
-    https://brightspace.bentley.edu/d2l/le/lessons/44441/topics/935918
+https://brightspace.bentley.edu/d2l/le/lessons/44441/topics/935918
 https://docs.streamlit.io/develop/tutorials
 https://streamlitpython.com
 https://github.com/streamlit/streamlit
 https://brightspace.bentley.edu/d2l/le/lessons/44441/topics/935918
 https://www.youtube.com/watch?v=8G4cD7ofgCM&ab_channel=cissandbox
 https://www.youtube.com/playlist?list=PLMi6KgK4_mk2rK5jD-BK5RigFIP2QSq8W
+
 """
 
 # Import the libraries first
@@ -79,7 +80,7 @@ max_year = st.sidebar.slider(
 )  #[ST2] slider widget
 
 # This is info text for the side bar
-st.sidebar.markdown("Use the controls above to filter the shipwreck dataset.")
+st.sidebar.markdown("Use the controls above to filter the shipwreck dataset as you go.")
 
 # Give a vessel type filter
 filtered_df = df[df['VESSEL TYPE'] == selected_type] if selected_type != 'All' else df.copy()
@@ -106,8 +107,8 @@ st.subheader("Shipwrecks by Vessel Type")
 # Count shipwrecks according to each vessel type
 type_counts = filtered_df['VESSEL TYPE'].value_counts()
 
-# Keeping only the top 10 vessel types to simplify, put the remaining into "Other"
-top_n = 10
+# Keeping only the top 30 vessel types to simplify, put the remaining into "Other"
+top_n = 30
 if len(type_counts) > top_n:
     top_types = type_counts.head(top_n)   # Get top n element
     other_count = type_counts.iloc[top_n:].sum()   # Sum up counts of the other types
@@ -120,26 +121,26 @@ st.bar_chart(type_counts.sort_values())  #[CHART1] bar chart
 # Oldest Wreck Info
 
 st.subheader("Date of Oldest Wreck in Data")
-st.write(f"The oldest wreck year in the selected group is: {oldest_year}")
+st.write(f"The year of the oldest wreck in the selected group is: {oldest_year:.0f}")
 st.dataframe(oldest_df)
 
 
 # Chart 2: Lifespan over time of ships
 
-st.subheader("Average Lifespan of Shipwrecks Over Time")
-
+st.subheader("Average Lifespan of Shipwrecks Over Time") # Add sub header to interface
+st.write("Here is the average lifespan of the ships (before becoming wrecks) over time.")
 # Drop rows where lifespan/year data is missing
-lifespan_df = filtered_df.dropna(subset = ['Lifespan', 'YEAR'])
+lifespan_df = filtered_df.dropna(subset = ['Lifespan', 'YEAR'])  # Pandas dataframe, remove rows that don't have values for Lifespan or Year
 
 # Group them by the decade to see it easier
-lifespan_df['Decade'] = (lifespan_df['YEAR'] // 10) * 10
-
+lifespan_df['Decade'] = (lifespan_df['YEAR'] // 10) * 10  # New column decade, grouping year data into groups of 10 years
+                                            # // floor division, returns integer/rounds down to whole number
 # Calc average lifespan per decade, round to 1 decimal
 avg_lifespan = lifespan_df.groupby('Decade')['Lifespan'].mean().round(1)
 
 # Show a line chart of average ship lifespans
 st.line_chart(avg_lifespan)  #[CHART2] different chart type (line)
-
+        # Use streamlit's line chart to display it
 
 # Map Visuals and User Interaction
 
@@ -217,6 +218,7 @@ st.dataframe(pivot)  #[PIVOTTABLE] pivot table
 # Max / Min
 
 st.write("## Max Casualties")
+st.write("This is the maximum number of casualties in one shipwreck for this group of data.")
 # Get value of max casualties
 max_casualties = filtered_df['LIVES LOST'].max()  #[MAXMIN] max value
 if pd.notna(max_casualties):
@@ -235,8 +237,8 @@ cause_counts = filtered_df['CAUSE OF LOSS'].value_counts(dropna = False)
 # Replace NaN phrasing with "Unknown" so missing values show up clearer
 cause_counts.index = cause_counts.index.fillna("Unknown")
 
-# Only keep the top 10 and group the rest as other to make it easier to see
-top_n = 10
+# Only keep the top 30 and group the rest as other to make it easier to see
+top_n = 30
 if len(cause_counts) > top_n:
     top_causes = cause_counts.head(top_n)    # Take top n element causes
     other_count = cause_counts.iloc[top_n:].sum()   # Sum up remainder
