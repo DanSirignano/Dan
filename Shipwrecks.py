@@ -31,7 +31,6 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import pydeck as pdk
-import matplotlib.pyplot as plt
 
 df = pd.read_csv("Shipwreck Database.csv")  # Load dataset from CSV
 
