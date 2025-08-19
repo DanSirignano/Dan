@@ -2,7 +2,7 @@
 Name:       Dan Sirignano
 CS 230:     Summer Section 1
 Data:       Shipwreck Data
-URL:        tbd
+URL:        https://dansirignanotabrepositories-hvbomd4sqfgzdim7exa8et.streamlit.app/
 
 Description:
 
@@ -88,7 +88,7 @@ filtered_df = df[df['VESSEL TYPE'] == selected_type] if selected_type != 'All' e
 filtered_df = filtered_df[filtered_df['YEAR'] <= max_year]  #[FILTER2] filter by 2 conditions when combined above
 
 # Sort by years in ascending order
-filtered_df = filtered_df.sort_values(by="YEAR", ascending=True)  #[SORT] sort ascending
+filtered_df = filtered_df.sort_values(by="YEAR", ascending = True)  #[SORT] sort ascending order
 
 
 st.title("Shipwreck Data Set Information")   # Title info
@@ -96,7 +96,7 @@ st.write("This web app visualizes shipwrecks' data to help users explore differe
 
 # Get oldest wreck in selection and across the original dataset
 oldest_df, oldest_year = get_oldest_by_type(filtered_df, selected_type)  #[FUNCCALL2] function call
-all_oldest_df, all_oldest_year = get_oldest_by_type(df)  # #[FUNCCALL2] same function called again
+all_oldest_df, all_oldest_year = get_oldest_by_type(df)  # #[FUNCCALL2] function called again
 
 
 # Chart 1: Bar chart of shipwrecks based on the vessel type
@@ -169,7 +169,7 @@ map_df = map_df[
     (map_df['LIVES LOST'] >= casualty_range[0]) &
     (map_df['LIVES LOST'] <= casualty_range[1]) &
     (map_df['YEAR'] >= year_range[0]) &
-    (map_df['YEAR'] <= year_range[1])   #[FILTER2]
+    (map_df['YEAR'] <= year_range[1])   #[FILTER2] filter data by two or more conditions
 ]
 
 # If no data is matching, tell the user
@@ -234,7 +234,7 @@ st.subheader("Shipwrecks by Cause of Loss")
 cause_counts = filtered_df['CAUSE OF LOSS'].value_counts(dropna = False)
 
 # Replace NaN phrasing with "Unknown" so missing values show up clearer
-cause_counts.index = cause_counts.index.fillna("Unknown")
+cause_counts.index = [x if pd.notna(x) else "Unknown" for x in cause_counts.index]  #[LISTCOMP] list comprehension
 
 # Only keep the top 30 and group the rest as other to make it easier to see
 top_n = 30
